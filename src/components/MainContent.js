@@ -1,111 +1,104 @@
-import React from 'react';
-import Forcast from './Forcast';
-
-import '../components/MainContent.css'; 
+import React from "react";
+import Forecast from "./Forcast"; // Import the updated Forecast component
+import "../components/MainContent.css";
 
 class MainContent extends React.Component {
   constructor(props) {
     super(props);
-    this.forcasts = [];
-    this.state = { allForcasts: [] , modified: false };
+    // Initialize forecasts with data from localStorage if available
+    this.forecasts = JSON.parse(localStorage.getItem("forecasts")) || [];
+    this.state = { allForecasts: this.forecasts, modified: false };
     this.handleClick = this.handleClick.bind(this);
-    this.renderForcast = this.renderForcast.bind(this);
-  } 
-  
-  // A function that extracts data from a raw forcast and returns 
-  // an object that contains the city name, the time and a 6-elements array
-  // that contains a 6-days forecast details. 
-  // These details to be handed down to a <Forcast /> component.  
-  createForcast = (forcast) => {
-    const city = forcast.city;     
-    const time_now = forcast.time_now;
-    let forcastDays = [];  
-    
-    for (let i = 0; i < forcast.consolidated_weather.length; i++) {
-      const date_of_forcast = forcast.consolidated_weather[i].applicable_date;
-      const max_temp = Math.round(forcast.consolidated_weather[i].max_temp);
-      const min_temp = Math.round(forcast.consolidated_weather[i].min_temp);
-      const now_temp = i === 0 ? Math.round(forcast.consolidated_weather[i].the_temp) : '';
-      const weather_state_name = forcast.consolidated_weather[i].weather_state_name;
-      const weather_state_abbr = forcast.consolidated_weather[i].weather_state_abbr;
-     
-      forcastDays.push({date_of_forcast, max_temp, min_temp, now_temp, weather_state_name, weather_state_abbr});
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+
+  // Function to save forecasts data to localStorage
+  saveToLocalStorage(data) {
+    localStorage.setItem("forecasts", JSON.stringify(data));
+  }
+
+  renderForecasts() {
+    const { allForecasts } = this.state;
+
+    if (allForecasts.length === 0) {
+      return <h3>No forecasts to show</h3>;
     }
 
-    return {city, time_now, forcastDays};
+    return allForecasts.map((forecast, index) => (
+      <Forecast key={index} city={forecast.city} />
+    ));
   }
- 
-  createForcastComponent = (data) => {
-    return (<Forcast key={Math.floor(Math.random() * 100)} city={data.city} time={data.time_now} forcastDays={data.forcastDays}/>) 
-  } 
-  
-  renderForcast() {
-    
-    let components = [];
-    for(let i = 0; i < this.state.allForcasts.length; i++) {
-      let forcastProps = this.createForcast(this.state.allForcasts[i]); 
-        
-      components.push(this.createForcastComponent(forcastProps));      
-    }
-
-    return components;     
-  }
-  
-  // componentDidMount() {
-  //   if(this.forcasts.length > 3)
-  //   {
-  //     this.forcasts.shift();            
-  //   }
-  //   this.setState({allForcasts: this.forcasts});
-  // }
 
   handleClick(event) {
-   // event.preventDefault();
-    
-    let el = document.querySelector("input[type='text']");
-    if (el.value === '')
-      return;
+    this.getWeatherData();
+  }
 
-    let locName = el.value;    
-    
-    console.log(locName);
-    
-    const url = `http://localhost:5000/forcasts/${locName}/`;    
-    fetch(url)
-      .then(response => { return response.json(); })
-        .then(data => { 
-         // console.log("Data from server: ", data);           
-          
-          const date = new Date();
-          const time_now = date.getHours() + ':' + date.getMinutes();
-          
-          this.forcasts.push({ city: locName, time_now , consolidated_weather: data.consolidated_weather});
-          
-          if(this.forcasts.length > 3) {
-            this.forcasts.shift();            
-          }
+  handleKeyPress(event) {
+    if (event.key === "Enter") {
+      this.getWeatherData();
+    }
+  }
 
-          this.setState({allForcasts: this.forcasts});          
-          // console.log("this.state: ", this.state.allForcasts)
-        })
-          .catch(err => {
-            console.log(err);
-          });                         
-  }    
+  getWeatherData() {
+    const el = document.querySelector("input[type='text']");
+    if (el.value === "") return;
+
+    const locName = el.value;
+    const apiKey = "d36d1a9684497f5c9e2ffe7d69c197ed"; // Replace with your API key
+    const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
+      locName
+    )}&units=metric&cnt=5&appid=${apiKey}`;
+
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        const date = new Date();
+        const time_now = date.getHours() + ":" + date.getMinutes();
+        this.forecasts.push({
+          city: locName,
+          time_now,
+          consolidated_weather: data.list,
+        });
+
+        if (this.forecasts.length > 3) {
+          this.forecasts.shift();
+        }
+
+        // Update state and save to localStorage
+        this.setState({ allForecasts: this.forecasts }, () => {
+          this.saveToLocalStorage(this.forecasts);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   render() {
-    console.log("this.state.allForcasts: ", this.state.allForcasts);
-    const allComponents = this.renderForcast();
-    return(      
+    return (
       <div>
-        <div>
-          <input className="text_input" type="text" name="search" placeholder="Search for location"/> 
-          <button className="button" type="button" name="button" value="getWeather" onClick={this.handleClick}>Get Weather</button>        
+        <div className="tagline">
+          <h1>Get 5-Day Weather Forecast</h1>
         </div>
-        <div className="all-forcasts">          
-          { (this.state.allForcasts === undefined || this.state.allForcasts.length < 1) && (<h3>No forcasts to show</h3>)}
-          {(this.state.allForcasts && this.state.allForcasts.length >= 1) && (allComponents.map(item => {return item;} ))}          
-        </div>                     
+        <div>
+          <input
+            className="text_input"
+            type="text"
+            name="search"
+            placeholder="Search for location"
+            onKeyPress={this.handleKeyPress} // Call handleKeyPress on Enter key press
+          />
+          <button
+            className="button"
+            type="button"
+            name="button"
+            value="getWeather"
+            onClick={this.handleClick}
+          >
+            Get Weather
+          </button>
+        </div>
+        <div className="all-forecasts">{this.renderForecasts()}</div>
       </div>
     );
   }

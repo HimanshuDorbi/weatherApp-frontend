@@ -11,8 +11,8 @@ class Header extends React.Component {
   render() {
     return (
       <header className="header-style"> 
-        {/* <img className="logo" src="https://logo-logos.com/wp-content/uploads/2017/07/Linux_Logo_02.png" alt="Some logo" height="40" width="40"/>         */}
-        <div>Happy Weather</div>
+     
+        <div> Weather App</div>
       </header>
     );
   } 

@@ -1,45 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import "./Forcast.css";
 
-import './Forcast.css';
+const Forecast = ({ city }) => {
+  const [forecastData, setForecastData] = useState([]);
 
-class Forcast extends React.Component {
-    constructor(props) {
-        super(props);
+  useEffect(() => {
+    // Replace 'YOUR_API_KEY' with your OpenWeatherMap API key
+    const apiKey = "d36d1a9684497f5c9e2ffe7d69c197ed";
+    const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&cnt=5&appid=${apiKey}`;
 
-        this.state = {
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        const forecastDays = data.list.map((item) => ({
+          date: item.dt_txt,
+          weather_state_name: item.weather[0].main,
+          max_temp: item.main.temp_max,
+          min_temp: item.main.temp_min,
+          humidity: item.main.humidity,
+        }));
+        setForecastData(forecastDays);
+      })
+      .catch((error) => {
+        console.error("Error fetching weather data:", error);
+      });
+  }, [city]);
 
-        }
-    }
-    
-    oneDay = (dayForcast, i) => {
-      const now_temp = (i === 0 ? dayForcast.now_temp : undefined);
-      const weather_state_abbr = dayForcast.weather_state_abbr;
-      const imageURL = "https://www.metaweather.com/static/img/weather/" + weather_state_abbr + ".svg";
-      return (
-      <li key={this.props.time + i }>
-        <h3>{dayForcast.date_of_forcast}</h3>
-        <img src={imageURL} width={60} height={60} alt={"bla"}/>
-        <h4>{dayForcast.weather_state_name}</h4>  
-        <h4>Max: {dayForcast.max_temp}</h4>
-        <h4>Min: {dayForcast.min_temp}</h4>
-        {now_temp && (<h4>Now: {now_temp}</h4>)}
-      </li>
-      )
-    }
+  return (
+    <div className="location-style">
+      <h4>{city}</h4>
+      <ul>
+        {forecastData.map((day, index) => (
+          <li key={index}>
+            <h3>{day.date}</h3>
+            <h4>{day.weather_state_name}</h4>
+            <h4>Max: {day.max_temp}°C</h4>
+            <h4>Min: {day.min_temp}°C</h4>
+            <h4>Humidity: {day.humidity}%</h4>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
-    render() {        
-        let forcastDays = this.props.forcastDays;
-        return (
-          <div className="location-style">
-            <h4>{this.props.city} <br />
-              <span>Time: {this.props.time}</span>
-            </h4>
-            <ul>
-              {forcastDays.map( (day, index) => this.oneDay(day, index) ) } 
-            </ul>
-          </div>
-        );
-    }
-}
-
-export default Forcast;
+export default Forecast;

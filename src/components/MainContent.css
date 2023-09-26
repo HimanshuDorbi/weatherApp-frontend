@@ -1,34 +1,106 @@
-
-
-.all-forcasts {
+/* Updated CSS for better mobile responsiveness */
+.all-forecasts {
     display: flex;
     flex-direction: column;
     margin-top: 20px;
     margin-left: 20px;
-    background-color: azure;  
+    background-color: azure;
+    max-height: 100vh; /* Set the maximum height to 100% of the viewport height */
+    overflow-y: auto; /* Add vertical scroll when content overflows */
 }
 
-.button {
-    background-color: rgb(0, 87, 158); /* Green */
+  
+/* Updated styles for the search bar and button */
+.text_input {
+   
+    font-size: 16px;
+    padding: 12px 16px; /* Increase padding for a comfortable touch */
+    border: 1px solid #ccc; /* Add a subtle border */
+    border-radius: 4px; /* Rounded corners */
+    margin: 8px 0;
+    width: 20%; /* Take up full width */
+    transition: border-color 0.3s ease; /* Smooth border color transition */
+  }
+  
+  .text_input:focus {
+    border-color: #007acc; /* Change border color on focus */
+    outline: none; /* Remove the default focus outline */
+  }
+  
+  .button {
+    background-color: #007acc; /* Change button background color */
     border: none;
     color: white;
-    padding: 10px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
+    padding: 12px 20px; /* Increase padding for a comfortable touch */
     font-size: 16px;
-    margin: 4px 2px;
+    margin: 8px 0;
+    margin-left: 5px;
+    border-radius: 4px; /* Rounded corners */
     cursor: pointer;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
-}
-
-.button:hover {
-    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-}
-
-.text_input {
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+  }
+  
+  .button:hover {
+    background-color: #005d91; /* Change button background color on hover */
+  }
+  
+  
+  .text_input {
     font-size: 16px;
     margin: 4px 2px;
-    padding: 8px 32px
-}
+    padding: 8px 16px; /* Reduce padding for smaller screens */
+  }
+  
+  /* Additional styling for better spacing */
+  .location-style ul li {
+    margin: 10px 0;
+    padding: 5px;
+    margin-right: 20px;
+    border-radius: 4px;
+  }
+
+  /* Tagline styling */
+/* Tagline styling */
+.tagline {
+    text-align: center;
+    /* Change the background color */
+    color: #000000; /* Text color for the tagline */
+    padding: 20px 0; /* Add padding for spacing */
+    margin-bottom: 20px; /* Add margin to separate it from the search bar */
+    font-size: 15px; /* Font size for the tagline */
+    font-weight: bold; /* Bold text for emphasis */
+    text-transform: uppercase; /* Uppercase text */
+    font-family: 'Arial', sans-serif; /* Change the font style */
+  }
+  
+  
+  
+  /* Media query for further adjustments for smaller screens */
+  @media (max-width: 768px) {
+    .all-forecasts {
+      max-height: unset; /* Remove the maximum height */
+      overflow-y: unset; /* Remove the vertical scroll */
+    }
+  
+    .button {
+      padding: 10px 12px; /* Further reduce padding */
+    }
+  
+    .text_input {
+        margin-top: 20px;
+        width: 50%;
+      padding: 8px 12px; /* Further reduce padding */
+    }
+  
+    /* Adjust margins for smaller screens */
+    .location-style h3 {
+      margin-bottom: 5px;
+    }
+  
+    .location-style ul li {
+      margin: 3px 0;
+      margin-right: 6px;
+      padding: 3px;
+    }
+  }
+  

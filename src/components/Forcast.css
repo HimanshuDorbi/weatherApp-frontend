@@ -27,3 +27,30 @@
     padding: 5px;
     margin: 10px;
 }
+
+.location-style ul li h3 {
+    color: red;
+  }
+@media (max-width: 768px) {
+    /* Change to a single column layout for smaller screens */
+    .location-style {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .location-style h3 {
+      margin-right: 0; /* Remove right margin for city name */
+      margin-bottom: 10px; /* Add bottom margin for spacing */
+    }
+  
+    .location-style ul li {
+      margin: 5px 0; /* Adjust margin for spacing */
+    }
+  }
+  
+  
+  
+  
+  
+  
+  
